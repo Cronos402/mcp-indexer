@@ -372,28 +372,6 @@ app.get('/server/:id', async (c: Context) => {
       };
     };
 
-    const detectVLayerProof = (req: unknown, res: unknown, meta: unknown) => {
-      const response = (res && typeof res === 'object') ? (res as Record<string, unknown>) : {};
-      const metaObj = (meta && typeof meta === 'object') ? (meta as Record<string, unknown>) : {};
-
-      const resMeta = (response._meta as Record<string, unknown> | undefined) || undefined;
-      const proofFromResponse = resMeta && (resMeta['vlayer/proof'] as Record<string, unknown> | undefined);
-      const proofFromMeta = metaObj && (metaObj['vlayer/proof'] as Record<string, unknown> | undefined);
-      
-      const proof = proofFromResponse || proofFromMeta;
-      const hasProof = !!proof;
-
-      return {
-        hasProof,
-        proof: proof ? {
-          success: proof.success,
-          version: proof.version,
-          notaryUrl: (proof.meta as Record<string, unknown> | undefined)?.notaryUrl,
-          valid: proof.valid,
-          generatedAt: proof.generatedAt,
-        } : undefined,
-      };
-    };
 
     // Build summary
     const totalRequests = logs.length;
@@ -401,17 +379,16 @@ app.get('/server/:id', async (c: Context) => {
 
     // Derive recent payments from logs where payment response present
     const payments = logs
-      .map(l => ({ 
-        l, 
+      .map(l => ({
+        l,
         p: detectPayment(l.request, l.response, l.meta),
-        v: detectVLayerProof(l.request, l.response, l.meta)
       }))
       .filter(x => !!x.p.hasPayment)
       .slice(0, 50)
       .map(x => {
         const pr = x.p.metadata.paymentResponse as any | undefined;
         const preq = x.p.metadata.paymentRequest as any | undefined;
-        
+
         // Extract amount and currency like minimal-explorer
         const amountFormatted = (() => {
           // 6 decimals: value is a stringified integer, e.g., "100000" => "0.1"
@@ -423,15 +400,7 @@ app.get('/server/:id', async (c: Context) => {
             maximumFractionDigits: 6,
           });
         })();
-        
-        const vlayerProof = x.v.hasProof && x.v.proof ? {
-          success: x.v.proof.success === true,
-          version: x.v.proof.version,
-          notaryUrl: x.v.proof.notaryUrl,
-          valid: x.v.proof.valid === true,
-          generatedAt: x.v.proof.generatedAt,
-        } : undefined;
-        
+
         return {
           id: x.l.id,
           createdAt: x.l.ts,
@@ -441,7 +410,6 @@ app.get('/server/:id', async (c: Context) => {
           payer: pr?.payer,
           amountFormatted,
           currency: pr ? "USDC" : undefined,
-          vlayerProof,
       };
     });
 

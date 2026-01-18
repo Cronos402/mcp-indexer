@@ -9,7 +9,7 @@ export const inspectMcp = async (origin: string) => {
     const url = new URL(origin);
 
     const transport = new StreamableHTTPClientTransport(url);
-    const client = new Client({ name: 'inspect-mcpay.tech/1.0', version: '1.0.0' }, { capabilities: {} });
+    const client = new Client({ name: 'inspect-cronos402.dev/1.0', version: '1.0.0' }, { capabilities: {} });
 
     try {
         await client.connect(transport);
