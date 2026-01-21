@@ -202,14 +202,9 @@ app.get('/servers', async (c: Context) => {
     const sort = (c.req.query('sort') ?? 'score').toLowerCase();
 
     // Get total count for pagination metadata
-    const totalQuery = db.select({ count: sql`count(*)` }).from(mcpServers);
-    if (includeApprovedOnly) {
-      // @ts-ignore drizzle infers correct types from schema
-      // count only approved when includeApprovedOnly
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      (totalQuery as any).where(eq(mcpServers.moderationStatus, 'approved'));
-    }
+    const totalQuery = includeApprovedOnly
+      ? db.select({ count: sql`count(*)` }).from(mcpServers).where(eq(mcpServers.moderationStatus, 'approved'))
+      : db.select({ count: sql`count(*)` }).from(mcpServers);
     const [{ count }] = await totalQuery;
 
     // Fetch paginated results
