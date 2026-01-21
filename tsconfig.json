@@ -1,14 +1,18 @@
 {
-  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "target": "ESNext",
+    "lib": ["ES2022", "DOM"],
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "strict": true,
+    "noEmit": false,
     "skipLibCheck": true,
-    "types": [],
+    "resolveJsonModule": true,
+    "types": ["node"],
+    "jsx": "react-jsx",
     "outDir": "./dist",
-    "noEmit": false
+    "baseUrl": ".",
+    "paths": {}
   },
   "exclude": ["node_modules"]
 }
