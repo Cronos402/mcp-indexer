@@ -39,6 +39,9 @@ importers:
       '@types/node':
         specifier: ^24.7.0
         version: 24.10.9
+      '@types/pg':
+        specifier: ^8.16.0
+        version: 8.16.0
       drizzle-kit:
         specifier: ^0.31.1
         version: 0.31.8
